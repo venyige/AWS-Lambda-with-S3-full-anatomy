@@ -1,6 +1,6 @@
 ### Full anatomy of an AWS S3 -  Lambda project
 Full anatomy of an AWS S3 -  Lambda project on .NET Core C# platform, heavily utilizing the currently accessible local development aids (amazonlinux2 in Docker, lambci/lambda in Docker and localstack in Docker) Those frustrated on the exclusive programming language option, I am to inform that this project is part of my homework in an employment application process to a company advertising a .NET Core job.
-To make is more interesting, I decided to stay in front of Ubuntu not breaking my daily routine. What it involves is:
+To make it more interesting, I decided to stay in front of Ubuntu not breaking my daily routine. What it involves is:
 - using as much command-line tools as possible to accomplish the task,
 - using MonoDevelop development environment.
 
