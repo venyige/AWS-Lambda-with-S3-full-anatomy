@@ -1,0 +1,26 @@
+Transform: AWS::Serverless-2016-10-31
+Description: Sample SAM Template for ArabToRoman
+Globals:
+    Function:
+        Timeout: 10
+Resources:
+    lambdaS3Function:
+        Type: AWS::Lambda::Function 
+        Properties:
+            FunctionName: lambdaS3
+            CodeUri: src/lambdaS3/bin/Release/netcoreapp2.1/publish/
+            Handler: lambdaS3::lambdaS3.Function::FunctionHandler
+            Runtime: dotnetcore2.1
+            Environment:
+                Variables:
+                    PARAM1: VALUE
+            Events:
+                lambdaS3:
+                    Type: S3
+                    Properties:
+                      Bucket: atorinbucket
+                      Events: s3:ObjectCreated:*
+Outputs:
+    lambdaS3Api: "http://0.0.0.0:4574"
+    lambdaS3Function: lambdaS3Function.Arn
+    lambdaS3FunctionIamRole: lambdaS3FunctionRole.Arn

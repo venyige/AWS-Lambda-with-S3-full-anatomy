@@ -1,0 +1,36 @@
+﻿@page
+@model ServersideConvertModel
+@{
+    ViewData["Title"] = "Buffered Multiple File Upload (Physical)";
+}
+
+<h1>Upload multiple files to the server for Arab to Roman numeral conversion and get downloadable link</h1>
+
+<p>One or more files can be selected by the visitor. The following form's page handler saves the file(s) to disk.</p>
+<form enctype="multipart/form-data" method="post">
+    <div class="file-upload">
+      <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Browse files</button>
+
+      <div class="file-upload-wrap">
+        <input class="file-upload-input" type="file" asp-for="FileUpload.FormFiles" accept="text/plain, .in" onchange="readURL(this);" multiple/>
+        <span asp-validation-for="FileUpload.FormFiles"></span>
+        <div class="drag-text">
+          <h3>Drag and drop a file, click or "Browse files"</h3>
+        </div>
+      </div>
+      <div class="file-upload-content">
+        <p class="file-upload-files" alt="your files" />
+        <div class="file-title-wrap">
+          <button type="button" onclick="removeUpload()" class="remove-files">Remove <span class="file-title">Selected file</span></button>
+        <button class="file-upload-btn" onclick="removeUpload()" asp-page-handler="Upload" type="submit" value="Upload" >Upload files</button>
+            </div>
+      </div>
+    </div>
+</form>
+<p class="result">
+    @Model.Result
+</p>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

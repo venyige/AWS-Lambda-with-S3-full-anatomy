@@ -1,0 +1,35 @@
+Transform: AWS::Serverless-2016-10-31
+Description: Sample SAM Template for ArabToRoman
+Globals:
+    Function:
+        Timeout: 10
+Resources:
+    lambdaS3Function:
+        Type: AWS::Lambda::Function 
+        Properties:
+            FunctionName: lambdaS3
+            CodeUri: src/lambdaS3/bin/Release/netcoreapp2.1/publish/
+            Handler: lambdaS3::lambdaS3.Function::FunctionHandler
+            Runtime: dotnetcore2.1
+            Environment:
+                Variables:
+                    PARAM1: VALUE
+            Events:
+                lambdaS3:
+                    Type: S3
+                    Properties:
+                      Bucket: atorinbucket
+                      Events: s3:ObjectCreated:*
+Outputs:
+
+    lambdaS3Api:
+      Description: "API Gateway endpoint URL for Prod stage for Arab To Roman converter function"
+      Value: !Sub "http://localstack_net:4574"
+
+      lambdaS3Function:
+      Description: "Arab To Roman converter Lambda Function ARN"
+      Value: !GetAtt ArabToRomanConverterFunction.Arn
+
+      lambdaS3FunctionIamRole:
+      Description: "Implicit IAM Role created for Arab To Roman converter function"
+      Value: !GetAtt ArabToRomanConverterFunctionRole.Arn

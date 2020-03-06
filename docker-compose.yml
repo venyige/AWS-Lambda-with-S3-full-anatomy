@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+    aws-localstack:
+        image: localstack/localstack:0.10.8 # latest at the time of development     
+        container_name: aws-localstack
+        restart: always
+        volumes:
+        - "./localstack:/tmp/localstack/data"
+        networks:
+        - ${COMPOSE_PROJECT_NAME}_net
+        environment:
+        - SERVICES=s3,lambda
+        - DATA_DIR=/tmp/localstack/data
+        - LAMBDA_EXECUTOR=local
+        - DEFAULT_REGION=us-east-1
+        ports:
+        - "4572:4572" # S3
+        - "4574:4574" # Lambda
+        - "8080:8080"
+    awslin: 
+        build: ./
+        init: true
+        restart: always
+        container_name: awslin
+        networks:
+        - webappnet
+        - ${COMPOSE_PROJECT_NAME}_net
+        volumes:
+        -   type: bind
+            source: ./mvc_ator_webapp
+            target: /webapp
+        ports:
+        - "5000:5000"
+        - "5001:5001"
+        command: sh -c "cd /webapp&&dotnet build --force&&dotnet run"
+networks:
+    webappnet:
+    localaws_net:        

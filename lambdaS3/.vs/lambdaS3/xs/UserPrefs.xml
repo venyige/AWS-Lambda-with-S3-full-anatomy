@@ -1,0 +1,27 @@
+﻿<Properties StartupConfiguration="{11C6EADE-D03A-48E3-91BF-ADC73041CE0D}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="src/lambdaS3/Function.cs">
+    <Files>
+      <File FileName="src/lambdaS3/Function.cs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="lambdaS3" expanded="True">
+            <Node name="src" expanded="True">
+              <Node name="lambdaS3" expanded="True">
+                <Node name="Function.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.test.lambdaS3.Tests PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

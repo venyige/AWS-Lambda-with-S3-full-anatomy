@@ -1,0 +1,60 @@
+﻿@page
+@model AWSLambdaConvertModel
+@{
+    ViewData["Title"] = "Send file data to AWS S3 bucket";
+}
+
+<h1>Send file to AWS S3 bucket prepared to process and move the result to an other AWS S3 bucket</h1>
+
+<form id="uploadForm" action="Streaming/UploadPhysical" method="post" 
+    enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
+    <div class="file-upload">
+      <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">Browse files</button>
+
+      <div class="file-upload-wrap">
+        <input class="file-upload-input" type="file" accept="text/plain, .in"  onchange="readURL(this);"  name="file"/>
+        <div class="drag-text">
+          <h3>Drag and drop a file, click or "Browse files"</h3><br>
+                <output form="uploadForm" name="result"></output>
+        </div>
+      </div>
+      <div class="file-upload-content">
+        <p class="file-upload-files" alt="your files" />
+        <div class="file-title-wrap">
+          <button type="button" onclick="removeUpload()" class="remove-files">Remove <span class="file-title">Selected file</span></button>
+        <button class="file-upload-btn" type="submit" value="Upload" >Upload files</button>
+            </div>
+      </div>
+    </div>
+</form>
+@section Scripts {
+  <script>
+    "use strict";
+
+    async function AJAXSubmit (oFormElement) {
+      const formData = new FormData(oFormElement);
+
+      try {
+        const response = await fetch(oFormElement.action, {
+          method: 'POST',
+          headers: {
+            'RequestVerificationToken': getCookie('RequestVerificationToken')
+          },
+          body: formData
+        });
+        removeUpload();
+        oFormElement.elements.namedItem("result").value = 
+          'Result: ' + response.status + ' ' + response.statusText;
+    
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    
+    function getCookie(name) {
+      var value = "; " + document.cookie;
+      var parts = value.split("; " + name + "=");
+      if (parts.length == 2) return parts.pop().split(";").shift();
+    }
+  </script>
+}
