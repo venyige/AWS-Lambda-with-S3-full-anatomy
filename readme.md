@@ -48,6 +48,12 @@ Native:
   8                 ForcePathStyle = true,
   9             };
 ``` 
+To run the webapp out of docker, also important to edit the line 
+``` 
+ "StoredFilesPath": "/webapp/upload", 
+ ``` 
+in the "appsettings.json" file to the path where the uploaded files being stored. 
+
 In order to deploy the serverless lambda service locally, the docker-update.yml file has to start the CloudFormation service. Its default port is 4581, and the name should be entered as “cloudformation”, no capitals. As node easier to maintain locally rather than in docker, just navigate the “lambdaS3/src/lambdaS3” folder in a terminal, and enter the following commands. 
 To install serverless: 
 ```
@@ -138,5 +144,3 @@ Then the file have to be edited similar to this:
 }
 ```
 *The current hard-coded settings comply with the localstack docker development, that is the URL of the AWS local S3 service is “http://localhost:4572”. In order to test it against a real AWS account, the URL must be re-written in the code accordingly.
-
-
