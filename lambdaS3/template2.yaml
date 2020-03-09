@@ -8,7 +8,7 @@ Resources:
         Type: AWS::Lambda::Function 
         Properties:
             FunctionName: lambdaS3
-            CodeUri: src/lambdaS3/bin/Release/netcoreapp2.1/publish/
+            CodeUri: src/lambdaS3/bin/Release/netcoreapp2.1/lambdaS3.zip
             Handler: lambdaS3::lambdaS3.Function::FunctionHandler
             Runtime: dotnetcore2.1
             Environment:
@@ -20,7 +20,4 @@ Resources:
                     Properties:
                       Bucket: atorinbucket
                       Events: s3:ObjectCreated:*
-Outputs:
-    lambdaS3Api: "http://0.0.0.0:4574"
-    lambdaS3Function: lambdaS3Function.Arn
-    lambdaS3FunctionIamRole: lambdaS3FunctionRole.Arn
+

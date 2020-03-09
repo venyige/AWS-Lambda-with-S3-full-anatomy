@@ -102,10 +102,9 @@ namespace mvc_ator_webapp.Controllers
                         var trustedFileNameForFileStorage = Path.GetRandomFileName();
 
 
-                        using (Stream inMemStream = new MemoryStream(await FileHelpers.ProcessStreamedFile(
+                        using (var inMemStream = new MemoryStream(await FileHelpers.ProcessStreamedFile(
                             section, contentDisposition, ModelState,
                             _permittedExtensions, _fileSizeLimit)))
-                        using (StreamReader fileStream = new StreamReader(inMemStream))
                         {
 
                             if (!ModelState.IsValid)
@@ -114,10 +113,9 @@ namespace mvc_ator_webapp.Controllers
                             }
 
 
-                            RegisteredS3.Process(fileStream, trustedFileNameForDisplay);
-
-                            _logger.LogInformation(
-                                "Uploaded file '{TrustedFileNameForDisplay}' sent to " +
+                            RegisteredS3.Process(inMemStream, trustedFileNameForDisplay);
+                            _logger.LogInformation(RegisteredS3.retStr +
+                                "\nReturn from uploading file '{TrustedFileNameForDisplay}' sent to " +
                                 "the registered AWS S3 bucket",
                                 trustedFileNameForDisplay);
 

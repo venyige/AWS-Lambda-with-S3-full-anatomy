@@ -114,6 +114,8 @@ namespace ArabToRomanConverter
                         string line;
                         while ((line = sr.ReadLine()) != null)
                         {
+                            if (line.Length == 0)
+                                continue;
                             try
                             {
                                 int numToAdd = Int32.Parse(line);
@@ -130,7 +132,7 @@ namespace ArabToRomanConverter
                             }
                             catch (FormatException e)
                             {
-                                Console.WriteLine("The input file contains non integer-convertible line(s)");
+                                Console.WriteLine("The input file contains non integer-convertible line(s)" + e.Message);
                                 return;
                             }
                         }

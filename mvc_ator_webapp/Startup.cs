@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,8 +31,8 @@ namespace mvc_ator_webapp
                             .AddPageApplicationModelConvention("/AWSLambdaConvert",
                                 model =>
                                 {
-                                    model.Filters.Add(
-                                        new GenerateAntiforgeryTokenCookieAttribute());
+                                    //model.Filters.Add(
+                                        //new GenerateAntiforgeryTokenCookieAttribute());
                                     model.Filters.Add(
                                         new DisableFormValueModelBindingAttribute());
                                 });
@@ -43,6 +44,11 @@ namespace mvc_ator_webapp
 
             services.AddSingleton<IFileProvider>(physicalProvider);
 
+/// https://stackoverflow.com/questions/23402210/the-anti-forgery-token-could-not-be-decrypted/53870092#53870092
+/// https://stackoverflow.com/questions/42103004/using-antiforgery-in-asp-net-core-and-got-error-the-antiforgery-token-could-no/47143941#47143941
+            services.AddDataProtection()
+                .SetApplicationName("ator-mvc-framework")
+                .PersistKeysToFileSystem(new System.IO.DirectoryInfo(@"/var/secret/"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -32,7 +32,6 @@ namespace lambdaS3
         private const string inBucketName = "atorinbucket";
         private const string outBucketName = "atoroutbucket";
         // Specify your bucket region (an example region is shown).
-        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.EUCentral1;
         private IAmazonS3 s3Client; IAmazonS3 S3Client { get; set; }
         private string bktKey = String.Empty;
         /// <summary>
@@ -42,16 +41,18 @@ namespace lambdaS3
         /// </summary>
         public Function()
         {
+            AWSCredentials creds = new AnonymousAWSCredentials();
+
             AmazonS3Config config = new AmazonS3Config
             {
-                ProxyHost = "0.0.0.0",
+                ProxyHost = "aws-localstack",
                 ProxyPort = 4572,
-                RegionEndpoint = Amazon.RegionEndpoint.EUCentral1,
-                ServiceURL = "http://0.0.0.0:4572",
+                RegionEndpoint = RegionEndpoint.GetBySystemName("us-east-1"),
+                ServiceURL = "http://aws-localstack:4572",
                 UseHttp = true,
                 ForcePathStyle = true,
             };
-            s3Client = new AmazonS3Client(config);
+            s3Client = new AmazonS3Client(creds, config);
         }
         /// <summary>
         /// Constructs an instance with a preconfigured S3 client. This can be used for testing the outside of the Lambda environment.
@@ -62,6 +63,7 @@ namespace lambdaS3
             this.S3Client = s3Client;
         }
 
+
         /// <summary>
         /// This method is called for every Lambda invocation. This method takes in an S3 event object and can be used 
         /// to respond to S3 notifications.
@@ -69,27 +71,36 @@ namespace lambdaS3
         /// <param name="evnt"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<string> FunctionHandler(S3Event evnt, ILambdaContext context)
+        public string FunctionHandler(S3Event evnt, ILambdaContext context)
         {
             var s3Event = evnt.Records?[0].S3;
+
             if(s3Event == null)
             {
-                return null;
+                return "Empty event";
             }
-
             try
             {
-                bktKey=s3Event.Object.Key;
-                ProcessObjectDataAsync(context).Wait();
-                var response = await this.S3Client.GetObjectMetadataAsync(s3Event.Bucket.Name, s3Event.Object.Key);
-                return response.Headers.ContentType;
+                bktKey = s3Event.Object.Key;
+                context.Logger.LogLine($"Getting object {s3Event.Object.Key} from bucket: {s3Event.Bucket.Name}.");
+
+               ProcessObjectDataAsync(context).Wait();
+                context.Logger.LogLine($"Returned from data processing");
+                //GetObjectMetadataRequest mdReq = new GetObjectMetadataRequest
+                //{
+                //    BucketName = s3Event.Bucket.Name,
+                //    Key = s3Event.Object.Key,
+                //};
+                //var response = await this.S3Client.GetObjectMetadataAsync(mdReq);
+
+                return "Success";
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 context.Logger.LogLine($"Error getting object {s3Event.Object.Key} from bucket {s3Event.Bucket.Name}. Make sure they exist and your bucket is in the same region as this function.");
                 context.Logger.LogLine(e.Message);
                 context.Logger.LogLine(e.StackTrace);
-                throw;
+                return "Exception";
             }
         }
         async Task ProcessObjectDataAsync(ILambdaContext  context)
@@ -97,10 +108,13 @@ namespace lambdaS3
             List<int> arabNums = new List<int> { };
             try
             {
+                context.Logger.LogLine($"GetObjectAsync, key: {this.bktKey}, bucket: {inBucketName}.");
+
                 GetObjectRequest request = new GetObjectRequest
                 {
                     BucketName = inBucketName,
                     Key = this.bktKey,
+
                 };
                 using (GetObjectResponse response = (await s3Client.GetObjectAsync(request)))
                 using (Stream responseStream = response.ResponseStream)
@@ -136,6 +150,7 @@ namespace lambdaS3
                         {
                             BucketName = outBucketName,
                             ContentBody = convertedNumStr,
+                            Key= this.bktKey,
                         };
 
                         foreach (int iia in arabNums)
@@ -148,18 +163,21 @@ namespace lambdaS3
                     catch (Exception e)
                     {
                         context.Logger.LogLine("Error writing the output bucket file" + e.Message);
+                        return;
                     }
                 }
 
             }
             catch (AmazonS3Exception e)
             {
-                context.Logger.LogLine("Error reading object. Message:'{0}'" + e.Message);
+                context.Logger.LogLine("Error reading object. Message:" + e.Message);
+                return;
 
             }
             catch (Exception e)
             {
-                context.Logger.LogLine("Unknown error reading object. Message:'{0}'" + e.Message);
+                context.Logger.LogLine("Unknown error reading object. Message:" + e.Message);
+                return;
             }
         }
          

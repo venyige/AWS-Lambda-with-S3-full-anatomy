@@ -6,17 +6,20 @@ services:
         restart: always
         volumes:
         - "./localstack:/tmp/localstack/data"
+        - "./lambdaS3:/lambda_deploy"
         networks:
         - ${COMPOSE_PROJECT_NAME}_net
         environment:
-        - SERVICES=s3,lambda
+        - SERVICES=s3,lambda,cloudformation
         - DATA_DIR=/tmp/localstack/data
-        - LAMBDA_EXECUTOR=local
+        - LAMBDA_EXECUTOR=docker
         - DEFAULT_REGION=us-east-1
+        - LAMBDA_REMOTE_DOCKER=false
+        - DEBUG=3
         ports:
-        - "4572:4572" # S3
-        - "4574:4574" # Lambda
+        - "4567-4599:4567-4599" # all services
         - "8080:8080"
+        command: sh -c "cd /lambda_deploy"
     awslin: 
         build: ./
         init: true
@@ -32,7 +35,8 @@ services:
         ports:
         - "5000:5000"
         - "5001:5001"
-        command: sh -c "cd /webapp&&dotnet build --force&&dotnet run"
+        command: sh -c "cd /webapp&&dotnet build --force&&dotnet run --urls=http://0.0.0.0:5000"
+     #   command: sh -c "cd /webapp&&dotnet run --urls=http://0.0.0.0:5000"
 networks:
     webappnet:
     localaws_net:        
