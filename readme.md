@@ -61,7 +61,7 @@ provider:
     name: aws
     runtime: dotnetcore2.1 
 ```
-To produce a proper payload, the serverless offers a template which can be save like: 
+To produce a proper payload, the serverless offers a template which can be saved like: 
 ```
 sls generate-event --type aws:s3 --stage local>>event_payload.json 
 ```
