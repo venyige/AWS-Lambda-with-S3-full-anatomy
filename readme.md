@@ -13,15 +13,98 @@ The lambda binaries can be deployed via MS VS, AWS website or from command line:
 
 The third part is to develop a webapp that is capable of 
 - converting the uploaded files, 
-- communicating with an AWS S3 bucket (in this case no conversion on the server side).*
+- communicating with an AWS S3 bucket.*
 
 The webapp main page offers two choices
 1. uploading a file – or multiple files at once to the server to get the converted files and the downloadable links to them. 
-2. Uploading a file to an AWS S3 bucket that was prior triggered with a Lambda function, which is to convert the files as described above.
+2. Uploading a file to an AWS S3 bucket that was prepared to trigger a Lambda function with an "ObjectCreated" event, which is to convert the files as described above.
 The converted files can be later downloaded from the bucket that stores the resulted files.
 
-Lambda deployment steps:
-dotnet publish -c Release
-dotnet lambda package
+In order to deploy the lambda serverless lambda service locally, the docker-update.yml file has to start the CloudFormation service. Its default port is 4581, and the name should be entered as “cloudformation”, no capitals. As node easier to maintain locally rather than in docker, just navigate the “lambdaS3/src/lambdaS3” folder in a terminal, and enter the following commands.
+To install serverless:
+npm install -g serverless 
+npm install --save-dev serverless-localstack 
 
-*The current hard-coded settings comply with the localstack docker development, that is the URL of the AWS local S3 service is “http://localhost:4572”. In order to test it against a real AWS account, the URL must be re-written in the code accordingly.
+Lambda deployment steps:
+dotnet build –force 
+dotnet lambda package 
+sls deploy --stage local --region us-east-1 
+sls invoke local -f lambdaS3 --stage local --path event_payload.json --region us-east-1 
+
+the “sls deploy --stage local --region us-east-1” command deploys the lambda to localstack based on the instructions given in “serverless.yml”: 
+
+```
+service: lambdaS3
+plugins:
+    - serverless-localstack
+custom:
+    bucket: tutorial
+    localstack:
+        stages:
+        - local
+        host: http://localhost
+        endpointFile: endpts.json
+        lambda:
+        mountCode: True
+package:
+    individually: true
+functions:
+    lambdaS3:
+        handler: lambdaS3::lambdaS3.Function::FunctionHandler
+        package:
+            artifact: bin/Release/netcoreapp2.1/lambdaS3.zip
+        events:
+            - s3:
+                bucket: atorinbucket
+                event: s3:ObjectCreated:*
+provider:
+    name: aws
+    runtime: dotnetcore2.1 
+```
+To produce a proper payload, the serverless offers a template which can be save like: 
+```
+sls generate-event --type aws:s3 --stage local>>event_payload.json 
+```
+Then the file have to be edited similar to this:
+```
+{
+    "Records":
+    [
+    
+        {
+            "eventVersion":"2.0",
+        "eventSource":"aws:s3",
+        "awsRegion":"us-east-1",
+        "eventTime":"2016-09-25T05:15:44.261Z",
+        "eventName":"ObjectCreated:Put",
+        "userIdentity": {
+            "principalId": "AWS:AROAW5CA2KAGZPAWYRL7K:cli"
+        },
+        "requestParameters": {
+            "sourceIPAddress": "222.24.107.21"
+        },
+        "responseElements": {
+            "x-amz-request-id": "00093EEAA5C7G7F2",
+            "x-amz-id-2": "9tTklyI/OEj4mco12PgsNksgxAV3KePn7WlNSq2rs+LXD3xFG0tlzgvtH8hClZzI963KYJgVnXw="
+        },
+        "s3": {
+            "s3SchemaVersion": "1.0",
+            "configurationId": "151dfa64-d57a-4383-85ac-620bce65f269",
+            "bucket": {
+                "name": "atorinbucket",
+                "ownerIdentity": {
+                    "principalId": "A3QLJ3P3P5QY05"
+                },
+                "arn": "arn:aws:lambda:us-east-1:000000000000:function:lambdaS3-local-lambdaS3"
+            },
+            "object": {
+                "key": "input.txt"
+            }
+        }
+    }
+]
+}
+```
+*The current hard-coded settings are comply with the localstack docker development, that is the URL of the AWS local S3 service is “http://localhost:4572”. In order to test it against a real AWS account, the URL must be re-written in the code accordingly.
+
+
