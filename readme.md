@@ -20,7 +20,7 @@ The webapp main page offers two choices
 2. Uploading a file to an AWS S3 bucket that was prepared to trigger a Lambda function with an "ObjectCreated" event, which is to convert the files as described above.
 The converted files can be later downloaded from the bucket that stores the resulted files.
 
-In order to deploy the lambda serverless lambda service locally, the docker-update.yml file has to start the CloudFormation service. Its default port is 4581, and the name should be entered as “cloudformation”, no capitals. As node easier to maintain locally rather than in docker, just navigate the “lambdaS3/src/lambdaS3” folder in a terminal, and enter the following commands.
+In order to deploy the serverless lambda service locally, the docker-update.yml file has to start the CloudFormation service. Its default port is 4581, and the name should be entered as “cloudformation”, no capitals. As node easier to maintain locally rather than in docker, just navigate the “lambdaS3/src/lambdaS3” folder in a terminal, and enter the following commands.
 To install serverless:
 npm install -g serverless 
 npm install --save-dev serverless-localstack 
