@@ -18,8 +18,36 @@ The third part is to develop a webapp that is capable of
 The webapp main page offers two choices
 1. uploading a file – or multiple files at once to the server to get the converted files and the downloadable links to them. 
 2. Uploading a file to an AWS S3 bucket that was prepared to trigger a Lambda function with an "ObjectCreated" event, which is to convert the files as described above.
-The converted files can be later downloaded from the bucket that stores the resulted files.
+The converted files can be later downloaded from the bucket that stores the resulted files. 
 
+The localstack connection is hardcoded to the scenario Kestrel runs in docker. To run it out of docker, one has to re-write the connection URL "aws-localstack" to "localhost" in “registereds3process.cs” function “RegisteredS3.Process”:  
+
+Docker (original): 
+
+```
+  1             AmazonS3Config config = new AmazonS3Config
+  2             {
+  3                 ProxyHost = "aws-localstack",
+  4                 ProxyPort = 4572,
+  5                 RegionEndpoint = RegionEndpoint.GetBySystemName("us-east-1") ,
+  6                 ServiceURL = "http://aws-localstack:4572",
+  7                 UseHttp = true,
+  8                 ForcePathStyle = true,
+  9             };
+``` 
+Native:
+
+```
+  1             AmazonS3Config config = new AmazonS3Config
+  2             {
+  3                 ProxyHost = "localhost",
+  4                 ProxyPort = 4572,
+  5                 RegionEndpoint = RegionEndpoint.GetBySystemName("us-east-1") ,
+  6                 ServiceURL = "http://localhost:4572",
+  7                 UseHttp = true,
+  8                 ForcePathStyle = true,
+  9             };
+``` 
 In order to deploy the serverless lambda service locally, the docker-update.yml file has to start the CloudFormation service. Its default port is 4581, and the name should be entered as “cloudformation”, no capitals. As node easier to maintain locally rather than in docker, just navigate the “lambdaS3/src/lambdaS3” folder in a terminal, and enter the following commands. 
 To install serverless: 
 ```
