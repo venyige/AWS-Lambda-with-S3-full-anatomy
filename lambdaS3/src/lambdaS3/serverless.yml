@@ -1,0 +1,31 @@
+service: lambdaS3
+
+plugins:
+    - serverless-localstack
+
+custom:
+    bucket: tutorial
+    localstack:
+        stages:
+        - local
+        host: http://localhost
+        endpointFile: endpts.json
+        lambda:
+        mountCode: True
+
+package:
+    individually: true
+          
+functions:
+    lambdaS3:
+        handler: lambdaS3::lambdaS3.Function::FunctionHandler
+        package:
+            artifact: bin/Release/netcoreapp2.1/lambdaS3.zip
+        events:
+            - s3:
+                bucket: atorinbucket
+                event: s3:ObjectCreated:*
+provider:
+    name: aws
+    runtime: dotnetcore2.1
+      
