@@ -109,6 +109,6 @@ Then the file have to be edited similar to this:
 ]
 }
 ```
-*The current hard-coded settings are comply with the localstack docker development, that is the URL of the AWS local S3 service is “http://localhost:4572”. In order to test it against a real AWS account, the URL must be re-written in the code accordingly.
+*The current hard-coded settings comply with the localstack docker development, that is the URL of the AWS local S3 service is “http://localhost:4572”. In order to test it against a real AWS account, the URL must be re-written in the code accordingly.
 
 
