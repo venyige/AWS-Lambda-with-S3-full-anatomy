@@ -1,8 +1,6 @@
 service: lambdaS3
-
 plugins:
     - serverless-localstack
-
 custom:
     bucket: tutorial
     localstack:
@@ -12,10 +10,8 @@ custom:
         endpointFile: endpts.json
         lambda:
         mountCode: True
-
 package:
     individually: true
-          
 functions:
     lambdaS3:
         handler: lambdaS3::lambdaS3.Function::FunctionHandler

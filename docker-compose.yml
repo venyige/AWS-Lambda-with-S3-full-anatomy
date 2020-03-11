@@ -19,7 +19,6 @@ services:
         ports:
         - "4567-4599:4567-4599" # all services
         - "8080:8080"
-        command: sh -c "cd /lambda_deploy"
     awslin: 
         build: ./
         init: true
