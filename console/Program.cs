@@ -155,7 +155,7 @@ namespace ArabToRomanConverter
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("The output file could not be write:");
+                    Console.WriteLine("The output file could not be written:");
                     Console.WriteLine(e.Message);
                 }
             }
